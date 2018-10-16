@@ -25,27 +25,29 @@
                     android:id="@+id/title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
                     android:textColor="@android:color/black"
-                    android:textSize="24sp"
+                    android:textSize="21sp"
                     android:layout_marginStart="8dp"
                     app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="8dp"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-            <ImageView
+            <ImageButton
+                    android:background="@null"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" app:srcCompat="@drawable/heart"
-                    android:id="@+id/imageView" android:layout_marginTop="32dp"
+                    android:layout_height="wrap_content" app:srcCompat="@drawable/heart_outline"
+                    android:id="@+id/save_button" android:layout_marginTop="24dp"
                     app:layout_constraintTop_toBottomOf="@+id/title" app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="16dp" android:layout_marginBottom="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"/>
-            <ImageView
+
+            <ImageButton
+                    android:background="@null"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp" app:srcCompat="@drawable/content_copy"
-                    android:id="@+id/imageView2" android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@+id/title" app:layout_constraintEnd_toStartOf="@+id/imageView"
+                    android:layout_height="wrap_content" app:srcCompat="@drawable/content_copy"
+                    android:id="@+id/copy" android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="24dp"
+                    app:layout_constraintTop_toBottomOf="@+id/title" app:layout_constraintEnd_toStartOf="@+id/save_button"
                     android:layout_marginEnd="16dp"/>
 
         </android.support.constraint.ConstraintLayout>

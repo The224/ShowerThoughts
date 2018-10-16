@@ -1,41 +1,72 @@
 package com.m224.showerthoughts.adapter
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.ImageButton
+import android.widget.Toast
 import com.m224.showerthoughts.R
+import com.m224.showerthoughts.domaine.CardViewHolder
 import com.m224.showerthoughts.entity.Thought
 
+
 class ThoughtsAdapter(private val dataset: Array<Thought>) :
-    RecyclerView.Adapter<ThoughtsAdapter.ViewHolder>() {
+    RecyclerView.Adapter<CardViewHolder>() {
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder.
-    // Each data item is just a string in this case that is shown in a TextView.
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var itemTitle: TextView
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): CardViewHolder {
+        val v = LayoutInflater.from(viewGroup.context)
+            .inflate(R.layout.card_layout, viewGroup, false)
+        return CardViewHolder(v)
+    }
 
-        init {
-            itemTitle = itemView.findViewById(R.id.title)
+    override fun getItemCount() = dataset.size
+
+    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+        holder.itemTitle.text = dataset[position].text
+
+        if (dataset[position].save) {
+            holder.saveButton.setImageResource(R.drawable.heart)
+        } else {
+            holder.saveButton.setImageResource(R.drawable.heart_outline)
+        }
+
+        holder.saveButton.setOnClickListener {
+            dataset[position].save = !dataset[position].save
+            changeSaveImage(holder.saveButton, dataset[position].save)
+        }
+
+        holder.copyButton.setOnClickListener {
+            Log.d("Debug", "Click on this copy !!!")
+            setClipboard(holder.copyButton.context, holder.itemTitle.text.toString())
+            Toast.makeText(holder.copyButton.context, "Content copy!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.card_layout, viewGroup, false)
-        return ViewHolder(v)
+    private fun setClipboard(context: Context, text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clip = android.content.ClipData.newPlainText("Copied Text", text)
+        clipboard.primaryClip = clip
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.itemTitle.text = dataset[position].text
+    private fun changeSaveImage(saveButton: ImageButton, saveState: Boolean) {
+        val outAnimation = AnimationUtils.loadAnimation(saveButton.context, R.anim.fadeout)
+        val inAnimation = AnimationUtils.loadAnimation(saveButton.context, R.anim.fadein)
+        outAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) {}
+            override fun onAnimationEnd(animation: Animation?) {
+                if (saveState) {
+                    saveButton.setImageResource(R.drawable.heart)
+                } else {
+                    saveButton.setImageResource(R.drawable.heart_outline)
+                }
+                saveButton.startAnimation(inAnimation)
+            }
+        })
+        saveButton.startAnimation(outAnimation)
     }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = dataset.size
 }

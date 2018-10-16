@@ -8,6 +8,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import com.m224.showerthoughts.adapter.ThoughtsAdapter
 import com.m224.showerthoughts.entity.Thought
+import android.support.v4.widget.SwipeRefreshLayout
+import android.util.Log
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,9 +21,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        customActionbar(this, R.layout.appbar)
+        setCustomActionbar()
+        setRefresherListener()
+        setMockThoughts()
 
-        val dataset: Array<Thought> = arrayOf(
+    }
+
+    private fun setCustomActionbar() {
+        val actionBar = this.supportActionBar
+        actionBar!!.setDisplayShowCustomEnabled(true)
+        this.title = ""
+        val inflator = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val v = inflator.inflate(R.layout.appbar, null)
+        actionBar.customView = v
+    }
+
+    private fun setRefresherListener() {
+        findViewById<SwipeRefreshLayout>(R.id.swiperefresh).setOnRefreshListener {
+            Log.i("Debug", "onRefresh called from SwipeRefreshLayout")
+            findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
+        }
+    }
+
+    private fun setMockThoughts() {
+        val dataSet: Array<Thought> = arrayOf(
             Thought("The phrase “ Don’t do drugs and stay in school” is commonly used, yet when you are sick your parents tell you “ Take these drugs and don’t go to school”"),
             Thought("In the purge, there is technically no law to stop the police from enforcing the laws anyway"),
             Thought("Our lives would be a lot shittier if we didn’t have the butthole-clenching reflex"),
@@ -32,33 +56,15 @@ class MainActivity : AppCompatActivity() {
             Thought("One reason it’s difficult to communicate properly via text is that you interpret their messages with your current attitude")
         )
 
-
-
         viewManager = LinearLayoutManager(this)
-        viewAdapter = ThoughtsAdapter(dataset)
+        viewAdapter = ThoughtsAdapter(dataSet)
 
         recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
-
-            // use a linear layout manager
             layoutManager = viewManager
-
-            // specify an viewAdapter (see also next example)
             adapter = viewAdapter
-
         }
     }
 
-    fun customActionbar(appCompatActivity: AppCompatActivity, resources: Int) {
-        val actionBar = appCompatActivity.supportActionBar
-        actionBar!!.setDisplayShowCustomEnabled(true)
-        appCompatActivity.title = ""
 
-        val inflator = appCompatActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val v = inflator.inflate(resources, null)
-
-        actionBar.customView = v
-    }
 }
