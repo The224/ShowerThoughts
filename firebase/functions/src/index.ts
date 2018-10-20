@@ -8,14 +8,14 @@ DatabaseUtils.initDatabase();
 const tS = new ThoughtService();
 const fS = new FetchingService();
 
-tS.getById('vedsslvHMEMbozD8wuiQ').then(x => console.log(x.date)).catch();
+// tS.getById('vedsslvHMEMbozD8wuiQ').then(x => console.log(x.date)).catch();
 
-fS.lastThought();
-
-// fS.fetchThoughts().then(x => {
-//     console.log(x);
-// });
 
 export const helloWorld = functions.https.onRequest((request, response) => {
     response.json({ data: { hello: 'world' } });
 });
+
+export const nextRefresh = functions.https.onRequest((request, response) => {
+    response.json({ data: { nextUpdateIn: fS.getNextUpdateTime() } });
+});
+

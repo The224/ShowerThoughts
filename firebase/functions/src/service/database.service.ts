@@ -1,15 +1,20 @@
-import { CollectionReference } from '@google-cloud/firestore';
+import { CollectionReference, Firestore } from '@google-cloud/firestore';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
 export class DatabaseUtils {
 
     public static thoughtsRef: CollectionReference;
+    public static db: Firestore;
 
     public static initDatabase() {
         admin.initializeApp(functions.config().firebase);
-        const db = admin.firestore();
-        this.thoughtsRef = db.collection('thoughts');
+        this.db = admin.firestore();
+        this.thoughtsRef = this.db.collection('thoughts');
+    }
+
+    public static getFirestoreDb(): Firestore {
+        return (this.db) ? this.db : this.notInit();
     }
 
     public static getThoughtsCol(): CollectionReference {

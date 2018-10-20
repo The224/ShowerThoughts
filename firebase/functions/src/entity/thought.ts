@@ -5,6 +5,5 @@ export class Thought {
         public downVote: number,
         public upVote: number,
         public date: string,
-        public sourceId: string,
     ) { }
 }

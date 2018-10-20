@@ -14,6 +14,7 @@ const FETCHING_INTERVAL = 3600;
 export class FetchingService {
 
     private thoughtsRef = DatabaseUtils.getThoughtsCol();
+    private db = DatabaseUtils.getFirestoreDb();
 
     /**
      * Countdown before the next update
@@ -38,7 +39,7 @@ export class FetchingService {
     }
 
     /**
-     * Initialize the updating cycle
+     * Initialize the fetching cycle
      *
      * @private
      * @memberof FetchingService
@@ -46,24 +47,12 @@ export class FetchingService {
     private initCountdownUpdate() {
         setInterval(() => {
             if (this.fetchingCountdown === 0) {
-                this.updateThoughts();
+                this.fetchThoughts();
                 this.fetchingCountdown = FETCHING_INTERVAL
             } else {
                 this.fetchingCountdown--;
             }
-        }, 100);
-    }
-
-    /**
-     * Init the injection of new thoughts to the database
-     *
-     * @private
-     * @memberof FetchingService
-     */
-    private updateThoughts() {
-        this.fetchThoughts()
-            .then(thoughts => this.saveThoughts(thoughts))
-            .catch(e => console.error('fetchThoughts have fail: ' + e));
+        }, 1000);
     }
 
     /**
@@ -73,12 +62,11 @@ export class FetchingService {
      * @returns {Thought[]} found in the source
      * @memberof FetchingService
      */
-    public async fetchThoughts(): Promise<Thought[]> {
-        return await request({
+    public fetchThoughts() {
+        request({
             url: SOURCE_URL,
             json: true
         }).then(data => {
-            // TODO: verify if last thougth doens't exist
             this.saveThoughts(sourceToThought(data));
         });
     }
@@ -91,16 +79,29 @@ export class FetchingService {
      * @returns {Boolean} confirm if the result have been succesfull
      * @memberof FetchingService
      */
-    private saveThoughts(newThought: Thought[]): Boolean {
-        throw new Error('Not Implemented');
+    private saveThoughts(newThought: Thought[]) {
+        this.lastThought().then(lastThought => {
+            const batch = this.db.batch();
+            for (let i = 0; i < newThought.length; i++) {
+                if (newThought[i].date <= lastThought.date) {
+                    newThought.splice(i);
+                }
+            }
+            if (newThought.length > 0) {
+                newThought.forEach(thought => {
+                    batch.set(this.thoughtsRef.doc(), thought);
+                });
+                batch.commit().then(() => console.log('Batch good !')).catch(e => console.log('Batch throw error !: ' + e));
+            }
+        }).catch();
     }
 
     public lastThought(): Promise<Thought> {
-        const d = new Date();
-        d.setDate(d.getDate() - 2);
-        return this.thoughtsRef.where('date', ">=", d).orderBy('date', 'desc').limit(1).get().then((prevSnapshot => {
+        return this.thoughtsRef.orderBy('date', 'desc').limit(1).get().then((prevSnapshot => {
             return prevSnapshot.docs[0].data() as Thought;
-        }));
+        })).catch(() => {
+            return undefined;
+        });
     }
 
 }
