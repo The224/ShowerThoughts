@@ -6,7 +6,6 @@ export class DatabaseUtils {
 
     public static thoughtsRef: CollectionReference;
 
-
     public static initDatabase() {
         admin.initializeApp(functions.config().firebase);
         const db = admin.firestore();

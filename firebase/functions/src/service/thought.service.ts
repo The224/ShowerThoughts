@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { Thought } from "../entity/thought";
 import { DatabaseUtils } from "./database.service";
 
@@ -17,10 +18,13 @@ export class ThoughtService {
         throw new Error('Method Not Implemented.');
     }
 
-    public getById(id: string) {
-        this.thoughtsRef.where('id', '==', id).get()
-            .then(thoughts => console.log(thoughts)).catch();
-        return null;
+    public async getById(id: string): Promise<Thought> {
+        return await this.thoughtsRef.where(admin.firestore.FieldPath.documentId(), '==', id).get().then(thoughts => {
+            return {
+                id: thoughts.docs[0].id,
+                ...thoughts.docs[0].data() as Thought
+            };
+        });
     }
 
     public downVote(id: string): Promise<string> {

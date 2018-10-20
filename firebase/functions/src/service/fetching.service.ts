@@ -1,4 +1,7 @@
+import * as request from 'request-promise';
 import { Thought } from "../entity/thought";
+import { sourceToThought, SOURCE_URL } from '../source';
+import { DatabaseUtils } from './database.service';
 
 const FETCHING_INTERVAL = 3600;
 
@@ -9,6 +12,8 @@ const FETCHING_INTERVAL = 3600;
  * @class FetchingService
  */
 export class FetchingService {
+
+    private thoughtsRef = DatabaseUtils.getThoughtsCol();
 
     /**
      * Countdown before the next update
@@ -56,8 +61,9 @@ export class FetchingService {
      * @memberof FetchingService
      */
     private updateThoughts() {
-        const thoughts = this.fetchThoughts();
-        this.saveThoughts(thoughts);
+        this.fetchThoughts()
+            .then(thoughts => this.saveThoughts(thoughts))
+            .catch(e => console.error('fetchThoughts have fail: ' + e));
     }
 
     /**
@@ -67,8 +73,14 @@ export class FetchingService {
      * @returns {Thought[]} found in the source
      * @memberof FetchingService
      */
-    private fetchThoughts(): Thought[] {
-        throw new Error('Not Implemented');
+    public async fetchThoughts(): Promise<Thought[]> {
+        return await request({
+            url: SOURCE_URL,
+            json: true
+        }).then(data => {
+            // TODO: verify if last thougth doens't exist
+            this.saveThoughts(sourceToThought(data));
+        });
     }
 
     /**
@@ -81,6 +93,14 @@ export class FetchingService {
      */
     private saveThoughts(newThought: Thought[]): Boolean {
         throw new Error('Not Implemented');
+    }
+
+    public lastThought(): Promise<Thought> {
+        const d = new Date();
+        d.setDate(d.getDate() - 2);
+        return this.thoughtsRef.where('date', ">=", d).orderBy('date', 'desc').limit(1).get().then((prevSnapshot => {
+            return prevSnapshot.docs[0].data() as Thought;
+        }));
     }
 
 }

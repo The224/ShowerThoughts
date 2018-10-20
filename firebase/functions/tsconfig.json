@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["es6"],
+    "skipLibCheck": true,
+    "lib": [
+      "es6"
+    ],
     "module": "commonjs",
     "noImplicitReturns": true,
     "outDir": "lib",
@@ -12,6 +15,7 @@
     "src"
   ],
   "exclude": [
-    "node_modules"
-  ]
+    "node_modules",
+    "node_modules/firebase-admin/node_modules/@google-cloud/firestore/types/firestore.d.ts",
+  ],
 }
