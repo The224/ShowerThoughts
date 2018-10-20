@@ -1,26 +1,24 @@
-import { Firestore } from '@google-cloud/firestore';
+import { CollectionReference } from '@google-cloud/firestore';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
-/**
- * Use to fetch data from the firebase database
- *
- * @export
- * @class DatabaseService
- */
-export class DatabaseService {
+export class DatabaseUtils {
 
-    constructor() {
-        const firestore = new Firestore();
-        const settings = {/* your settings... */ timestampsInSnapshots: true };
-        firestore.settings(settings);
+    public static thoughtsRef: CollectionReference;
 
+
+    public static initDatabase() {
         admin.initializeApp(functions.config().firebase);
         const db = admin.firestore();
-        const thoughtsRef = db.collection('thoughts');
-        console.log("id:" + thoughtsRef.id);
+        this.thoughtsRef = db.collection('thoughts');
+    }
 
-        thoughtsRef.get().then(x => console.log('Testing : ' + x)).catch(x => console.log('ERROR : ' + x));
+    public static getThoughtsCol(): CollectionReference {
+        return (this.thoughtsRef) ? this.thoughtsRef : this.notInit();
+    }
+
+    private static notInit(): any {
+        throw new Error('You forget to init the Database Utils!');
     }
 
 }

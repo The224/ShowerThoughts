@@ -1,10 +1,12 @@
 import * as functions from 'firebase-functions';
-import { DatabaseService } from './service/database.service';
+import { DatabaseUtils } from './service/database.service';
+import { ThoughtService } from './service/thought.service';
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
+DatabaseUtils.initDatabase();
 
-const test = new DatabaseService();
+const tS = new ThoughtService();
+
+tS.getById('vedsslvHMEMbozD8wuiQ');
 
 export const helloWorld = functions.https.onRequest((request, response) => {
     response.json({ data: { hello: 'world' } });
