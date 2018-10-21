@@ -48,7 +48,7 @@ export class FetchingService {
         setInterval(() => {
             if (this.fetchingCountdown === 0) {
                 this.fetchThoughts();
-                this.fetchingCountdown = FETCHING_INTERVAL
+                this.fetchingCountdown = FETCHING_INTERVAL;
             } else {
                 this.fetchingCountdown--;
             }
@@ -68,7 +68,7 @@ export class FetchingService {
             json: true
         }).then(data => {
             this.saveThoughts(sourceToThought(data));
-        });
+        }).catch(e => console.log('fetchThoughts Error: ' + e));
     }
 
     /**
@@ -82,9 +82,12 @@ export class FetchingService {
     private saveThoughts(newThought: Thought[]) {
         this.lastThought().then(lastThought => {
             const batch = this.db.batch();
-            for (let i = 0; i < newThought.length; i++) {
-                if (newThought[i].date <= lastThought.date) {
-                    newThought.splice(i);
+            if (lastThought) {
+                for (let i = 0; i < newThought.length; i++) {
+                    if (newThought[i].date <= lastThought.date) {
+                        newThought.splice(i);
+                        break;
+                    }
                 }
             }
             if (newThought.length > 0) {
