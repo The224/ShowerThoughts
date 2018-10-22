@@ -1,29 +1,77 @@
 package com.m224.showerthoughts
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import com.m224.showerthoughts.adapter.ThoughtsAdapter
-import com.m224.showerthoughts.entity.Thought
-import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
-
+import android.view.LayoutInflater
+import android.widget.ImageButton
+import android.widget.Toast
+import com.m224.showerthoughts.adapter.ThoughtsAdapter
+import com.yuyakaido.android.cardstackview.CardStackView
+import com.yuyakaido.android.cardstackview.SwipeDirection
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var cardStackView: CardStackView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setCustomActionbar()
-        setRefresherListener()
-        setMockThoughts()
+
+        val dataSet: Array<String> = arrayOf(
+            "If all humans truly descended from solely Adam and Eve, it is very possible to have a “twin” that you aren’t related to due to genetics.",
+            "Marijuana edibles start working the minute you begin to doubt them",
+            "Even if you could travel through time, Earth wouldn't be where you left it.",
+            "Regardless of personality, a good lumberjack is a good fellar.",
+            "You never actually close your eyes, there's just a flap of skin over them.",
+            "One man’s bolognese is another man’s chili.",
+            "Your children love you for who they think you are. That's also why your exes hate you.",
+            "Losing power at home gets more and more terrifying with each passing year.",
+            "You can’t confront someone about lying without inadvertently teaching them how to be a better liar.",
+            "The smallest cuts hurt the most"
+        )
+
+        val viewAdapter = ThoughtsAdapter(this.baseContext, dataSet)
+
+        cardStackView = findViewById(R.id.cardStack)
+        cardStackView.setAdapter(viewAdapter)
+
+
+
+
+
+
+        val up = findViewById<ImageButton>(R.id.upBtn)
+        val down = findViewById<ImageButton>(R.id.downBtn)
+
+        val test = AnimatorSet()
+
+        test.playSequentially(ObjectAnimator.ofFloat(4.9F),
+        ObjectAnimator.ofFloat(4.9F),
+        ObjectAnimator.ofFloat(4.9F),
+        ObjectAnimator.ofFloat(4.9F))
+
+
+
+
+        up.setOnClickListener {
+            Toast.makeText(this.baseContext, "UP", Toast.LENGTH_LONG).show()
+            cardStackView.performSwipe(SwipeDirection.Left, test, test, null)
+        }
+
+        down.setOnClickListener {
+            Toast.makeText(this.baseContext, "DOWN", Toast.LENGTH_LONG).show()
+            cardStackView.performSwipe(SwipeDirection.Right, test, test, null)
+        }
+
+
+
+
+
 
     }
 
@@ -34,36 +82,6 @@ class MainActivity : AppCompatActivity() {
         val inflator = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val v = inflator.inflate(R.layout.appbar, null)
         actionBar.customView = v
-    }
-
-    private fun setRefresherListener() {
-        findViewById<SwipeRefreshLayout>(R.id.swiperefresh).setOnRefreshListener {
-            Log.i("Debug", "onRefresh called from SwipeRefreshLayout")
-            findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
-        }
-    }
-
-    private fun setMockThoughts() {
-        val dataSet: Array<Thought> = arrayOf(
-            Thought("The phrase “ Don’t do drugs and stay in school” is commonly used, yet when you are sick your parents tell you “ Take these drugs and don’t go to school”"),
-            Thought("In the purge, there is technically no law to stop the police from enforcing the laws anyway"),
-            Thought("Our lives would be a lot shittier if we didn’t have the butthole-clenching reflex"),
-            Thought("Egypt built the pyramids, Greece created myths, the Trojan war occurred, Rome rose, conquered the Mediterranean and fell, the Vikings attacked Britain and France, Charlemagne ruled Europe, the Black Death nearly wiped out Western Europe, and the whole time they never knew that pumpkins existed."),
-            Thought("Just noticed that -4º looks like somebody’s pooping"),
-            Thought("Humans invented machines to skip efforts and then invented gyms to make up for the efforts they skipped"),
-            Thought("“All you can eat” buffets are technically “all we can supply at this time” buffets."),
-            Thought("It’s more fun being wrong as a pessimist than being wrong as an optimist."),
-            Thought("One reason it’s difficult to communicate properly via text is that you interpret their messages with your current attitude")
-        )
-
-        viewManager = LinearLayoutManager(this)
-        viewAdapter = ThoughtsAdapter(dataSet)
-
-        recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view).apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
     }
 
 

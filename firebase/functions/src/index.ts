@@ -15,3 +15,8 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 export const nextRefresh = functions.https.onRequest((request, response) => {
     response.json({ data: { nextUpdateIn: fS.getNextUpdateTime() } });
 });
+
+export const fetchNow = functions.https.onRequest((request, response) => {
+    fS.fetchThoughts();
+    response.json({ data: 'Fetching in progress' });
+});

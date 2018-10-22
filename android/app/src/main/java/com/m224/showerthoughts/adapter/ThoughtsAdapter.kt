@@ -1,50 +1,65 @@
 package com.m224.showerthoughts.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.BaseAdapter
 import android.widget.ImageButton
-import android.widget.Toast
 import com.m224.showerthoughts.R
-import com.m224.showerthoughts.domaine.CardViewHolder
-import com.m224.showerthoughts.entity.Thought
+import android.widget.TextView
+import android.widget.Toast
+import kotlinx.android.synthetic.main.card_layout.view.*
+
+class ThoughtsAdapter(private val context: Context, private val dataset: Array<String>) :
+    BaseAdapter() {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+
+        val temp = dataset.get(position)
+
+        val v: View = LayoutInflater.from(context).inflate(R.layout.card_layout, parent, false)
+
+        val title: TextView
+        title = v.findViewById<View>(R.id.title) as TextView
+        title.text = temp
 
 
-class ThoughtsAdapter(private val dataset: Array<Thought>) :
-    RecyclerView.Adapter<CardViewHolder>() {
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): CardViewHolder {
-        val v = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.card_layout, viewGroup, false)
-        return CardViewHolder(v)
+//
+//        if (true) {
+//            v.save_button.setImageResource(R.drawable.heart)
+//        } else {
+//            v.save_button.setImageResource(R.drawable.heart_outline)
+//        }
+//
+//        v.save_button.setOnClickListener {
+//            // dataset[position].save = !dataset[position].save
+//            changeSaveImage(v.save_button, true)
+//        }
+//
+//        v.copy.setOnClickListener {
+//            Log.d("Debug", "Click on this copy !!!")
+//            setClipboard(v.copy.context, v.title.text.toString())
+//            Toast.makeText(v.copy.context, "Content copy!", Toast.LENGTH_SHORT).show()
+//        }
+
+
+        return v
     }
 
-    override fun getItemCount() = dataset.size
-
-    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.itemTitle.text = dataset[position].text
-
-        if (dataset[position].save) {
-            holder.saveButton.setImageResource(R.drawable.heart)
-        } else {
-            holder.saveButton.setImageResource(R.drawable.heart_outline)
-        }
-
-        holder.saveButton.setOnClickListener {
-            dataset[position].save = !dataset[position].save
-            changeSaveImage(holder.saveButton, dataset[position].save)
-        }
-
-        holder.copyButton.setOnClickListener {
-            Log.d("Debug", "Click on this copy !!!")
-            setClipboard(holder.copyButton.context, holder.itemTitle.text.toString())
-            Toast.makeText(holder.copyButton.context, "Content copy!", Toast.LENGTH_SHORT).show()
-        }
+    override fun getItem(position: Int): Any {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun getItemId(position: Int): Long {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCount() = dataset.size
 
     private fun setClipboard(context: Context, text: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
