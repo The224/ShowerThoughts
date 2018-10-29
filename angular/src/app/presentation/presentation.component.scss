@@ -1,0 +1,52 @@
+.quick {
+    background: #9d50bb;
+    background: linear-gradient(to top, #9d50bb, #6e48aa);
+    height: calc(100vh - 60px);
+    display: flex;
+    overflow: hidden;
+    .resume-container {
+        width: 60%;
+        display: flex;
+        align-items: center;
+        .resume {
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            margin: auto;
+            max-width: 500px;
+            h1 {
+                color: #eee;
+                span {
+                    color: #fff;
+                }
+            }
+            p {
+                color: #eee;
+            }
+            button {
+                height: 43px;
+                font-size: 20px;
+                svg {
+                    width: 30px;
+                }
+            }
+        }
+    }
+    .view {
+        width: 40%;
+        display: flex;
+        justify-content: center;
+        img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+        }
+    }
+}
+
+.hiw {}
+
+.preview {}
+
+.contact {}
